@@ -28,9 +28,8 @@ process.on('uncaughtException', console.error);
 let welcomeConfig = null;
 
 // =========================
-// IMAGE (GITHUB RAW)
+// IMAGE BANNIÈRE (GitHub RAW)
 // =========================
-// ⚠️ remplace si besoin ton repo
 const WELCOME_IMAGE =
   "https://raw.githubusercontent.com/gkreol/sdz-bot/main/assets/welcome.png";
 
@@ -46,14 +45,9 @@ client.once('ready', () => {
 // =========================
 client.on('interactionCreate', async (interaction) => {
   try {
-
     if (!interaction.isChatInputCommand()) return;
 
-    console.log("📩 Commande reçue:", interaction.commandName);
-
-    // =========================
     // 📢 /annonce
-    // =========================
     if (interaction.commandName === 'annonce') {
       const channel = interaction.options.getChannel('salon');
       const message = interaction.options.getString('message');
@@ -66,9 +60,7 @@ client.on('interactionCreate', async (interaction) => {
       });
     }
 
-    // =========================
     // 👋 /setwelcome
-    // =========================
     if (interaction.commandName === 'setwelcome') {
       const channel = interaction.options.getChannel('salon');
       const message = interaction.options.getString('message');
@@ -97,11 +89,10 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // =========================
-// 👋 WELCOME SYSTEM
+// WELCOME SYSTEM (BANNIÈRE STYLE)
 // =========================
 client.on('guildMemberAdd', async (member) => {
   try {
-
     if (!welcomeConfig) return;
 
     const channel = member.guild.channels.cache.get(welcomeConfig.channelId);
@@ -112,12 +103,13 @@ client.on('guildMemberAdd', async (member) => {
       .replaceAll("{server}", member.guild.name);
 
     const embed = new EmbedBuilder()
-      .setTitle("🌟 Bienvenue sur le serveur !")
-      .setDescription(msg)
-      .setColor(0x5865F2)
-      .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-      .setImage(WELCOME_IMAGE) // 👈 bannière image
-      .setFooter({ text: `Membres : ${member.guild.memberCount}` });
+      .setColor(0x2b2d31)
+      .setTitle(`✨ Bienvenue ${member.user.username}`)
+      .setDescription(
+        `👋 Salut ${member} !\nBienvenue sur **${member.guild.name}** 🎉\n\n${msg}`
+      )
+      .setThumbnail(member.user.displayAvatarURL({ dynamic: true, size: 256 }))
+      .setImage(WELCOME_IMAGE); // 👈 bannière style
 
     await channel.send({
       content: `👋 Bienvenue ${member} !`,
