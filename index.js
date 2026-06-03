@@ -4,9 +4,24 @@ const {
   EmbedBuilder
 } = require('discord.js');
 
-const { createCanvas, loadImage } = require('canvas');
+const {
+  createCanvas,
+  loadImage,
+  registerFont
+} = require('canvas');
 
 require('dotenv').config();
+
+// =========================
+// FIX FONT RAILWAY (IMPORTANT)
+// =========================
+try {
+  registerFont('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', {
+    family: 'DejaVu'
+  });
+} catch (e) {
+  console.log("⚠️ Font non chargée (fallback)");
+}
 
 // =========================
 // CLIENT
@@ -25,19 +40,19 @@ process.on('unhandledRejection', console.error);
 process.on('uncaughtException', console.error);
 
 // =========================
-// CONFIG
+// CONFIG (MEMOIRE)
 // =========================
 let welcomeConfig = null;
 
 // =========================
-// READY
+// READY CLEAN (NO WARNING)
 // =========================
 client.once('ready', () => {
   console.log(`✅ Connecté en tant que ${client.user.tag}`);
 });
 
 // =========================
-// COMMANDES
+// INTERACTIONS
 // =========================
 client.on('interactionCreate', async (interaction) => {
   try {
@@ -56,7 +71,7 @@ client.on('interactionCreate', async (interaction) => {
 
       return interaction.reply({
         content: "✅ Annonce envoyée",
-        ephemeral: true
+        flags: 64
       });
     }
 
@@ -74,7 +89,7 @@ client.on('interactionCreate', async (interaction) => {
 
       return interaction.reply({
         content: `✅ Welcome configuré dans ${channel}`,
-        ephemeral: true
+        flags: 64
       });
     }
 
@@ -84,37 +99,37 @@ client.on('interactionCreate', async (interaction) => {
     if (!interaction.replied) {
       await interaction.reply({
         content: "❌ Erreur bot",
-        ephemeral: true
+        flags: 64
       });
     }
   }
 });
 
 // =========================
-// 🎨 CARTE WELCOME (CANVAS)
+// 🎨 WELCOME IMAGE FIX RAILWAY
 // =========================
 async function createWelcomeCard(member) {
   const canvas = createCanvas(900, 300);
   const ctx = canvas.getContext("2d");
 
   // fond
-  ctx.fillStyle = "#2b2d31";
+  ctx.fillStyle = "#1e1f22";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // titre
   ctx.fillStyle = "#ffffff";
-  ctx.font = "40px Arial";
-  ctx.fillText("Bienvenue 👋", 300, 120);
+  ctx.font = "40px DejaVu";
+  ctx.fillText("Bienvenue 👋", 320, 120);
 
   // username
-  ctx.font = "30px Arial";
-  ctx.fillText(member.user.username, 300, 180);
+  ctx.font = "30px DejaVu";
+  ctx.fillText(member.user.username, 320, 180);
 
   // membres
-  ctx.font = "20px Arial";
-  ctx.fillText(`Membres: ${member.guild.memberCount}`, 300, 230);
+  ctx.font = "20px DejaVu";
+  ctx.fillText(`Membres: ${member.guild.memberCount}`, 320, 230);
 
-  // avatar
+  // avatar rond
   const avatar = await loadImage(
     member.user.displayAvatarURL({ extension: "png", size: 128 })
   );
@@ -152,7 +167,7 @@ client.on('guildMemberAdd', async (member) => {
       .setDescription(msg)
       .setColor(0x5865F2)
       .setImage("attachment://welcome.png")
-      .setFooter({ text: "Bienvenue sur le serveur ❤️" });
+      .setFooter({ text: "Bienvenue ❤️" });
 
     await channel.send({
       embeds: [embed],
@@ -165,7 +180,7 @@ client.on('guildMemberAdd', async (member) => {
 });
 
 // =========================
-// LOGIN
+// LOGIN SAFE
 // =========================
 client.login(process.env.TOKEN)
   .then(() => console.log("🔑 Login OK"))
