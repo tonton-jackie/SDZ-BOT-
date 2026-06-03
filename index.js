@@ -4,6 +4,7 @@ const {
 } = require('discord.js');
 
 const path = require('path');
+const { createCanvas, loadImage } = require('canvas');
 require('dotenv').config();
 
 // =========================
@@ -83,7 +84,7 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // =========================
-// WELCOME SYSTEM (SIMPLE + IMAGE LOCALE)
+// WELCOME SYSTEM (CANVAS + AVATAR + TON IMAGE)
 // =========================
 client.on('guildMemberAdd', async (member) => {
   try {
@@ -97,9 +98,57 @@ client.on('guildMemberAdd', async (member) => {
       .replaceAll("{user}", `${member}`)
       .replaceAll("{server}", member.guild.name);
 
+    // =========================
+    // CANVAS IMAGE
+    // =========================
+    const canvas = createCanvas(1000, 350);
+    const ctx = canvas.getContext('2d');
+
+    // 👉 ton image de fond
+    const background = await loadImage(
+      path.join(__dirname, 'assets', 'welcome.png')
+    );
+
+    ctx.drawImage(background, 0, 0, 1000, 350);
+
+    // =========================
+    // TEXTE
+    // =========================
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 45px Sans";
+    ctx.fillText("Bienvenue", 50, 120);
+
+    ctx.font = "30px Sans";
+    ctx.fillText(member.user.username, 50, 180);
+
+    ctx.font = "20px Sans";
+    ctx.fillText(`Sur ${member.guild.name}`, 50, 240);
+
+    // =========================
+    // AVATAR CIRCULAIRE
+    // =========================
+    const avatar = await loadImage(
+      member.user.displayAvatarURL({ extension: "png", size: 256 })
+    );
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(850, 175, 80, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+
+    ctx.drawImage(avatar, 770, 95, 160, 160);
+    ctx.restore();
+
+    // =========================
+    // ENVOI
+    // =========================
     await channel.send({
       content: `👋 Bienvenue ${member} sur le serveur SDZ !\n\n> ${msg}`,
-      files: [path.join(__dirname, 'assets', 'welcome.png')]
+      files: [{
+        attachment: canvas.toBuffer(),
+        name: "welcome-card.png"
+      }]
     });
 
   } catch (err) {
