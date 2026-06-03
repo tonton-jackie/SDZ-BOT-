@@ -1,58 +1,26 @@
-const {
-  Client,
-  GatewayIntentBits
-} = require('discord.js');
-
+const { Client, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
+
+console.log('=== DEBUG RAILWAY ===');
+console.log('TOKEN présent :', !!process.env.TOKEN);
+console.log('Longueur TOKEN :', process.env.TOKEN?.length || 0);
+console.log('CLIENT_ID présent :', !!process.env.CLIENT_ID);
+console.log('GUILD_ID présent :', !!process.env.GUILD_ID);
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
 
 client.once('clientReady', () => {
-  console.log(`Connecté en tant que ${client.user.tag}`);
-});
-
-client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-  if (interaction.commandName !== 'annonce') return;
-
-  try {
-    const channel = interaction.options.getChannel('salon');
-    const message = interaction.options.getString('message');
-    const image = interaction.options.getAttachment('image');
-
-    // ❗ obligatoire : message OU image
-    if (!message && !image) {
-      return interaction.reply({
-        content: '❌ Tu dois mettre un message ou une image.',
-        ephemeral: true
-      });
-    }
-
-    await channel.send({
-      content: message || '',
-      files: image ? [image] : []
-    });
-
-    await interaction.reply({
-      content: `✅ Annonce envoyée dans ${channel}`,
-      ephemeral: true
-    });
-
-  } catch (err) {
-    console.error(err);
-
-    if (!interaction.replied) {
-      await interaction.reply({
-        content: '❌ Une erreur est survenue.',
-        ephemeral: true
-      });
-    }
-  }
+  console.log(`✅ Connecté en tant que ${client.user.tag}`);
 });
 
 client.on('error', console.error);
-process.on('unhandledRejection', console.error);
 
-client.login(process.env.TOKEN);
+process.on('unhandledRejection', console.error);
+process.on('uncaughtException', console.error);
+
+client.login(process.env.TOKEN)
+  .catch(err => {
+    console.error('❌ Erreur login Discord :', err);
+  });
