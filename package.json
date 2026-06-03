@@ -7,7 +7,7 @@
     "deploy-commands": "node deploy-commands.js"
   },
   "dependencies": {
-    "discord.js": "^14.x",
-    "dotenv": "^16.x"
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.5"
   }
 }
