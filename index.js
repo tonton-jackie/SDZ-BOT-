@@ -6,7 +6,7 @@ const {
 
 require('dotenv').config();
 
-// 📌 stockage salon bienvenue (reset si restart Railway)
+// 📌 salon de bienvenue (reset si reboot Railway)
 let welcomeChannelId = null;
 
 const client = new Client({
@@ -24,7 +24,7 @@ client.once('clientReady', () => {
 });
 
 // =========================
-// COMMANDES
+// SLASH COMMANDS
 // =========================
 client.on('interactionCreate', async (interaction) => {
   try {
@@ -74,7 +74,7 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // =========================
-// 👋 WELCOME MESSAGE
+// 👋 WELCOME MESSAGE (GIF)
 // =========================
 client.on('guildMemberAdd', async (member) => {
   try {
@@ -84,14 +84,15 @@ client.on('guildMemberAdd', async (member) => {
     if (!channel) return;
 
     const embed = new EmbedBuilder()
-      .setTitle("👋 Bienvenue !")
+      .setTitle("👋 Bienvenue sur le serveur !")
       .setDescription(
-        `Bienvenue ${member} sur **${member.guild.name}** 🎉`
+        `🎉 Bienvenue ${member} !\n` +
+        `On est heureux de t’accueillir sur **${member.guild.name}** ❤️`
       )
       .setColor(0x00ff99)
-      .setThumbnail(member.user.displayAvatarURL())
-      .setImage('https://i.imgur.com/4M34hi2.png')
-      .setFooter({ text: "Bienvenue sur le serveur ❤️" });
+      .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+      .setImage("https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif")
+      .setFooter({ text: "Amuse-toi bien 😄" });
 
     channel.send({ embeds: [embed] });
 
