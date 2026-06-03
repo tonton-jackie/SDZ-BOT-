@@ -2,40 +2,34 @@ const { REST, Routes, SlashCommandBuilder, ChannelType } = require('discord.js')
 require('dotenv').config();
 
 const commands = [
-  // 📢 /annonce
+
   new SlashCommandBuilder()
     .setName('annonce')
-    .setDescription('Publier une annonce')
-    .addChannelOption(option =>
-      option.setName('salon')
-        .setDescription('Salon cible')
-        .addChannelTypes(ChannelType.GuildText)
+    .setDescription('Envoyer une annonce')
+    .addChannelOption(o =>
+      o.setName('salon')
+        .setDescription('Salon')
         .setRequired(true)
+        .addChannelTypes(ChannelType.GuildText)
     )
-    .addStringOption(option =>
-      option.setName('message')
-        .setDescription('Message à envoyer')
-        .setRequired(false)
-    )
-    .addAttachmentOption(option =>
-      option.setName('image')
-        .setDescription('Image optionnelle')
-        .setRequired(false)
+    .addStringOption(o =>
+      o.setName('message')
+        .setDescription('Message')
+        .setRequired(true)
     ),
 
-  // 👋 /setwelcome
   new SlashCommandBuilder()
     .setName('setwelcome')
-    .setDescription('Configurer le message de bienvenue')
-    .addChannelOption(option =>
-      option.setName('salon')
-        .setDescription('Salon de bienvenue')
-        .addChannelTypes(ChannelType.GuildText)
+    .setDescription('Configurer le welcome')
+    .addChannelOption(o =>
+      o.setName('salon')
+        .setDescription('Salon bienvenue')
         .setRequired(true)
+        .addChannelTypes(ChannelType.GuildText)
     )
-    .addStringOption(option =>
-      option.setName('message')
-        .setDescription('Message de bienvenue ({user}, {server})')
+    .addStringOption(o =>
+      o.setName('message')
+        .setDescription('Message ({user}, {server})')
         .setRequired(true)
     )
 ];
@@ -44,17 +38,12 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
-    console.log("🚀 Déploiement des commandes...");
-
+    console.log("🚀 Déploiement...");
     await rest.put(
-      Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        process.env.GUILD_ID
-      ),
+      Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
       { body: commands }
     );
-
-    console.log("✅ Commandes déployées !");
+    console.log("✅ Commands OK");
   } catch (err) {
     console.error(err);
   }
