@@ -4,11 +4,6 @@ const {
   EmbedBuilder
 } = require('discord.js');
 
-const {
-  createCanvas,
-  loadImage
-} = require('canvas');
-
 require('dotenv').config();
 
 // =========================
@@ -31,6 +26,10 @@ process.on('uncaughtException', console.error);
 // CONFIG MEMORY
 // =========================
 let welcomeConfig = null;
+
+// 👉 IMAGE GITHUB (REMPLACE PAR TON LIEN)
+const WELCOME_IMAGE =
+  "https://raw.githubusercontent.com/TON_USER/TON_REPO/main/assets/welcome.png";
 
 // =========================
 // READY
@@ -95,48 +94,7 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // =========================
-// 🎨 WELCOME IMAGE (FIX RAILWAY)
-// =========================
-async function createWelcomeCard(member) {
-  const canvas = createCanvas(900, 300);
-  const ctx = canvas.getContext("2d");
-
-  // fond
-  ctx.fillStyle = "#1e1f22";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // titre
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "40px sans-serif";
-  ctx.fillText("Bienvenue 👋", 320, 120);
-
-  // pseudo
-  ctx.font = "30px sans-serif";
-  ctx.fillText(member.user.username, 320, 180);
-
-  // membres
-  ctx.font = "20px sans-serif";
-  ctx.fillText(`Membres: ${member.guild.memberCount}`, 320, 230);
-
-  // avatar
-  const avatar = await loadImage(
-    member.user.displayAvatarURL({ extension: "png", size: 128 })
-  );
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(120, 150, 80, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.clip();
-
-  ctx.drawImage(avatar, 40, 70, 160, 160);
-  ctx.restore();
-
-  return canvas.toBuffer();
-}
-
-// =========================
-// 👋 WELCOME SYSTEM
+// 👋 WELCOME SYSTEM (STABLE + SANS CANVAS)
 // =========================
 client.on('guildMemberAdd', async (member) => {
   try {
@@ -145,22 +103,21 @@ client.on('guildMemberAdd', async (member) => {
     const channel = member.guild.channels.cache.get(welcomeConfig.channelId);
     if (!channel) return;
 
-    const image = await createWelcomeCard(member);
-
     const msg = welcomeConfig.message
       .replaceAll("{user}", `${member}`)
       .replaceAll("{server}", member.guild.name);
 
     const embed = new EmbedBuilder()
-      .setTitle("🌟 Bienvenue !")
+      .setTitle("🌟 Bienvenue sur le serveur !")
       .setDescription(msg)
       .setColor(0x5865F2)
-      .setImage("attachment://welcome.png")
-      .setFooter({ text: "Bienvenue ❤️" });
+      .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+      .setImage(WELCOME_IMAGE)
+      .setFooter({ text: `Membres : ${member.guild.memberCount}` });
 
     await channel.send({
-      embeds: [embed],
-      files: [{ attachment: image, name: "welcome.png" }]
+      content: `👋 Bienvenue ${member} !`,
+      embeds: [embed]
     });
 
   } catch (err) {
