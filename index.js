@@ -23,13 +23,16 @@ process.on('unhandledRejection', console.error);
 process.on('uncaughtException', console.error);
 
 // =========================
-// CONFIG MEMORY
+// CONFIG WELCOME
 // =========================
 let welcomeConfig = null;
 
-// 👉 IMAGE GITHUB (REMPLACE PAR TON LIEN)
+// =========================
+// IMAGE (GITHUB RAW)
+// =========================
+// ⚠️ remplace si besoin ton repo
 const WELCOME_IMAGE =
-  "https://raw.githubusercontent.com/TON_USER/TON_REPO/main/assets/welcome.png";
+  "https://raw.githubusercontent.com/gkreol/sdz-bot/main/assets/welcome.png";
 
 // =========================
 // READY
@@ -46,7 +49,7 @@ client.on('interactionCreate', async (interaction) => {
 
     if (!interaction.isChatInputCommand()) return;
 
-    console.log("📩 Commande:", interaction.commandName);
+    console.log("📩 Commande reçue:", interaction.commandName);
 
     // =========================
     // 📢 /annonce
@@ -94,10 +97,11 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // =========================
-// 👋 WELCOME SYSTEM (STABLE + SANS CANVAS)
+// 👋 WELCOME SYSTEM
 // =========================
 client.on('guildMemberAdd', async (member) => {
   try {
+
     if (!welcomeConfig) return;
 
     const channel = member.guild.channels.cache.get(welcomeConfig.channelId);
@@ -112,7 +116,7 @@ client.on('guildMemberAdd', async (member) => {
       .setDescription(msg)
       .setColor(0x5865F2)
       .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-      .setImage(WELCOME_IMAGE)
+      .setImage(WELCOME_IMAGE) // 👈 bannière image
       .setFooter({ text: `Membres : ${member.guild.memberCount}` });
 
     await channel.send({
