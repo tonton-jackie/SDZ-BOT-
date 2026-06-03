@@ -6,22 +6,10 @@ const {
 
 const {
   createCanvas,
-  loadImage,
-  registerFont
+  loadImage
 } = require('canvas');
 
 require('dotenv').config();
-
-// =========================
-// FIX FONT RAILWAY (IMPORTANT)
-// =========================
-try {
-  registerFont('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', {
-    family: 'DejaVu'
-  });
-} catch (e) {
-  console.log("⚠️ Font non chargée (fallback)");
-}
 
 // =========================
 // CLIENT
@@ -40,22 +28,23 @@ process.on('unhandledRejection', console.error);
 process.on('uncaughtException', console.error);
 
 // =========================
-// CONFIG (MEMOIRE)
+// CONFIG MEMORY
 // =========================
 let welcomeConfig = null;
 
 // =========================
-// READY CLEAN (NO WARNING)
+// READY
 // =========================
 client.once('ready', () => {
   console.log(`✅ Connecté en tant que ${client.user.tag}`);
 });
 
 // =========================
-// INTERACTIONS
+// COMMANDES
 // =========================
 client.on('interactionCreate', async (interaction) => {
   try {
+
     if (!interaction.isChatInputCommand()) return;
 
     console.log("📩 Commande:", interaction.commandName);
@@ -94,7 +83,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 
   } catch (err) {
-    console.error("❌ Interaction error:", err);
+    console.error(err);
 
     if (!interaction.replied) {
       await interaction.reply({
@@ -106,7 +95,7 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // =========================
-// 🎨 WELCOME IMAGE FIX RAILWAY
+// 🎨 WELCOME IMAGE (FIX RAILWAY)
 // =========================
 async function createWelcomeCard(member) {
   const canvas = createCanvas(900, 300);
@@ -118,18 +107,18 @@ async function createWelcomeCard(member) {
 
   // titre
   ctx.fillStyle = "#ffffff";
-  ctx.font = "40px DejaVu";
+  ctx.font = "40px sans-serif";
   ctx.fillText("Bienvenue 👋", 320, 120);
 
-  // username
-  ctx.font = "30px DejaVu";
+  // pseudo
+  ctx.font = "30px sans-serif";
   ctx.fillText(member.user.username, 320, 180);
 
   // membres
-  ctx.font = "20px DejaVu";
+  ctx.font = "20px sans-serif";
   ctx.fillText(`Membres: ${member.guild.memberCount}`, 320, 230);
 
-  // avatar rond
+  // avatar
   const avatar = await loadImage(
     member.user.displayAvatarURL({ extension: "png", size: 128 })
   );
@@ -175,12 +164,12 @@ client.on('guildMemberAdd', async (member) => {
     });
 
   } catch (err) {
-    console.error("❌ Welcome error:", err);
+    console.error("Welcome error:", err);
   }
 });
 
 // =========================
-// LOGIN SAFE
+// LOGIN
 // =========================
 client.login(process.env.TOKEN)
   .then(() => console.log("🔑 Login OK"))
