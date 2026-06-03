@@ -55,7 +55,7 @@ client.on('interactionCreate', async (interaction) => {
       });
     }
 
-    // 👋 /setwelcome (SEULEMENT SALON)
+    // 👋 /setwelcome (salon only)
     if (interaction.commandName === 'setwelcome') {
       const channel = interaction.options.getChannel('salon');
 
@@ -93,12 +93,12 @@ client.on('guildMemberAdd', async (member) => {
     if (!channel) return;
 
     // =========================
-    // MESSAGE FIXE
+    // TON TEXTE STYLÉ
     // =========================
     const message =
-`@${member.user.username} fait son apparition sur le serveur SDZ ! 🎉
+`<@${member.id}> ꜰᴀɪᴛ ꜱᴏɴ ᴀᴘᴘᴀʀɪᴛɪᴏɴ ꜱᴜʀ ʟᴇ ꜱᴇʀᴠᴇᴜʀ ꜱᴅᴢ ! 🎉
 
-On t’attendait avec impatience, installe-toi confortablement 🪑`;
+ᴏɴ ᴛ’ᴀᴛᴛᴇɴᴅᴀɪᴛ ᴀᴠᴇᴄ ɪᴍᴘᴀᴛɪᴇɴᴄᴇ, ɪɴꜱᴛᴀʟʟᴇ-ᴛᴏɪ ᴄᴏɴꜰᴏʀᴛᴀʙʟᴇᴍᴇɴᴛ 🪑`;
 
     // =========================
     // CANVAS
@@ -106,7 +106,6 @@ On t’attendait avec impatience, installe-toi confortablement 🪑`;
     const canvas = createCanvas(1000, 350);
     const ctx = canvas.getContext('2d');
 
-    // fond
     const background = await loadImage(
       path.join(__dirname, 'assets', 'welcome.png')
     );
