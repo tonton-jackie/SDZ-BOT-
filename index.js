@@ -6,15 +6,15 @@ const {
 
 require('dotenv').config();
 
-// 📌 salon welcome (reset si restart Railway)
-let welcomeChannelId = null;
-
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers
   ]
 });
+
+// 📌 CONFIG EN MÉMOIRE
+let welcomeConfig = null;
 
 // =========================
 // READY
@@ -27,17 +27,15 @@ client.once('clientReady', () => {
 // COMMANDES
 // =========================
 client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-
-  console.log("Commande reçue :", interaction.commandName);
-
   try {
+    if (!interaction.isChatInputCommand()) return;
+
+    console.log("Commande reçue :", interaction.commandName);
 
     // =========================
     // 📢 /annonce
     // =========================
     if (interaction.commandName === 'annonce') {
-
       const channel = interaction.options.getChannel('salon');
       const message = interaction.options.getString('message');
       const image = interaction.options.getAttachment('image');
@@ -64,20 +62,16 @@ client.on('interactionCreate', async (interaction) => {
     // 👋 /setwelcome
     // =========================
     if (interaction.commandName === 'setwelcome') {
-
       const channel = interaction.options.getChannel('salon');
+      const message = interaction.options.getString('message');
 
-      if (!channel) {
-        return await interaction.reply({
-          content: "❌ Salon invalide.",
-          ephemeral: true
-        });
-      }
-
-      welcomeChannelId = channel.id;
+      welcomeConfig = {
+        channelId: channel.id,
+        message: message
+      };
 
       return await interaction.reply({
-        content: `✅ Salon de bienvenue défini sur ${channel}`,
+        content: `✅ Welcome configuré dans ${channel}`,
         ephemeral: true
       });
     }
@@ -95,25 +89,35 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // =========================
-// 👋 WELCOME MESSAGE
+// 👋 WELCOME SYSTEM
 // =========================
 client.on('guildMemberAdd', async (member) => {
   try {
-    if (!welcomeChannelId) return;
+    if (!welcomeConfig) return;
 
-    const channel = member.guild.channels.cache.get(welcomeChannelId);
+    const channel = member.guild.channels.cache.get(welcomeConfig.channelId);
     if (!channel) return;
 
+    // 🔁 remplacement variables
+    const msg = welcomeConfig.message
+      .replaceAll("{user}", `${member}`)
+      .replaceAll("{server}", member.guild.name);
+
     const embed = new EmbedBuilder()
-      .setTitle("👋 Bienvenue !")
-      .setDescription(
-        `🎉 Bienvenue ${member} !\n` +
-        `Bienvenue sur **${member.guild.name}** ❤️`
-      )
-      .setColor(0x00ff99)
+      .setTitle("🌟 Bienvenue sur le serveur !")
+      .setDescription(msg)
+      .setColor(0x5865F2)
       .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
       .setImage("https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif")
-      .setFooter({ text: "Amuse-toi bien 😄" });
+      .addFields(
+        { name: "👤 Membre", value: member.user.tag, inline: true },
+        { name: "📊 Membres", value: `${member.guild.memberCount}`, inline: true }
+      )
+      .setFooter({
+        text: "Bienvenue ❤️",
+        iconURL: member.guild.iconURL()
+      })
+      .setTimestamp();
 
     channel.send({ embeds: [embed] });
 

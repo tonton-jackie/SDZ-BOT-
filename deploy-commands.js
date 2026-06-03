@@ -5,36 +5,37 @@ const commands = [
   // 📢 /annonce
   new SlashCommandBuilder()
     .setName('annonce')
-    .setDescription('Publier une annonce dans un salon')
+    .setDescription('Publier une annonce')
     .addChannelOption(option =>
-      option
-        .setName('salon')
-        .setDescription('Salon où envoyer le message')
+      option.setName('salon')
+        .setDescription('Salon cible')
         .addChannelTypes(ChannelType.GuildText)
         .setRequired(true)
     )
     .addStringOption(option =>
-      option
-        .setName('message')
-        .setDescription('Message à publier')
+      option.setName('message')
+        .setDescription('Message à envoyer')
         .setRequired(false)
     )
     .addAttachmentOption(option =>
-      option
-        .setName('image')
-        .setDescription('Image à envoyer')
+      option.setName('image')
+        .setDescription('Image optionnelle')
         .setRequired(false)
     ),
 
   // 👋 /setwelcome
   new SlashCommandBuilder()
     .setName('setwelcome')
-    .setDescription('Définir le salon de bienvenue')
+    .setDescription('Configurer le message de bienvenue')
     .addChannelOption(option =>
-      option
-        .setName('salon')
+      option.setName('salon')
         .setDescription('Salon de bienvenue')
         .addChannelTypes(ChannelType.GuildText)
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+      option.setName('message')
+        .setDescription('Message de bienvenue ({user}, {server})')
         .setRequired(true)
     )
 ];
@@ -43,7 +44,7 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
-    console.log('🚀 Déploiement des commandes...');
+    console.log("🚀 Déploiement des commandes...");
 
     await rest.put(
       Routes.applicationGuildCommands(
@@ -53,8 +54,8 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
       { body: commands }
     );
 
-    console.log('✅ Commandes déployées avec succès');
+    console.log("✅ Commandes déployées !");
   } catch (err) {
-    console.error('❌ Erreur déploiement:', err);
+    console.error(err);
   }
 })();
