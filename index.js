@@ -1,9 +1,9 @@
 const {
   Client,
-  GatewayIntentBits,
-  EmbedBuilder
+  GatewayIntentBits
 } = require('discord.js');
 
+const path = require('path');
 require('dotenv').config();
 
 // =========================
@@ -26,12 +26,6 @@ process.on('uncaughtException', console.error);
 // CONFIG WELCOME
 // =========================
 let welcomeConfig = null;
-
-// =========================
-// IMAGE BANNIÈRE (GitHub RAW)
-// =========================
-const WELCOME_IMAGE =
-  "https://raw.githubusercontent.com/gkreol/sdz-bot/main/assets/welcome.png";
 
 // =========================
 // READY
@@ -89,10 +83,11 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // =========================
-// WELCOME SYSTEM (BANNIÈRE STYLE)
+// WELCOME SYSTEM (SIMPLE + IMAGE LOCALE)
 // =========================
 client.on('guildMemberAdd', async (member) => {
   try {
+
     if (!welcomeConfig) return;
 
     const channel = member.guild.channels.cache.get(welcomeConfig.channelId);
@@ -102,18 +97,9 @@ client.on('guildMemberAdd', async (member) => {
       .replaceAll("{user}", `${member}`)
       .replaceAll("{server}", member.guild.name);
 
-    const embed = new EmbedBuilder()
-      .setColor(0x2b2d31)
-      .setTitle(`✨ Bienvenue ${member.user.username}`)
-      .setDescription(
-        `👋 Salut ${member} !\nBienvenue sur **${member.guild.name}** 🎉\n\n${msg}`
-      )
-      .setThumbnail(member.user.displayAvatarURL({ dynamic: true, size: 256 }))
-      .setImage(WELCOME_IMAGE); // 👈 bannière style
-
     await channel.send({
-      content: `👋 Bienvenue ${member} !`,
-      embeds: [embed]
+      content: `👋 Bienvenue ${member} sur le serveur SDZ !\n\n> ${msg}`,
+      files: [path.join(__dirname, 'assets', 'welcome.png')]
     });
 
   } catch (err) {
