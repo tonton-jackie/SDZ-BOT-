@@ -6,7 +6,7 @@ const {
 
 require('dotenv').config();
 
-// 📌 salon de bienvenue (reset si reboot Railway)
+// 📌 salon welcome (reset si restart Railway)
 let welcomeChannelId = null;
 
 const client = new Client({
@@ -17,56 +17,77 @@ const client = new Client({
 });
 
 // =========================
-// BOT READY
+// READY
 // =========================
 client.once('clientReady', () => {
   console.log(`✅ Connecté en tant que ${client.user.tag}`);
 });
 
 // =========================
-// SLASH COMMANDS
+// COMMANDES
 // =========================
 client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+
+  console.log("Commande reçue :", interaction.commandName);
+
   try {
-    if (!interaction.isChatInputCommand()) return;
 
-    console.log("Commande :", interaction.commandName);
-
+    // =========================
     // 📢 /annonce
+    // =========================
     if (interaction.commandName === 'annonce') {
+
       const channel = interaction.options.getChannel('salon');
       const message = interaction.options.getString('message');
       const image = interaction.options.getAttachment('image');
+
+      if (!channel) {
+        return await interaction.reply({
+          content: "❌ Salon invalide.",
+          ephemeral: true
+        });
+      }
 
       await channel.send({
         content: message || '',
         files: image ? [image] : []
       });
 
-      return interaction.reply({
+      return await interaction.reply({
         content: `✅ Annonce envoyée dans ${channel}`,
         ephemeral: true
       });
     }
 
+    // =========================
     // 👋 /setwelcome
+    // =========================
     if (interaction.commandName === 'setwelcome') {
+
       const channel = interaction.options.getChannel('salon');
+
+      if (!channel) {
+        return await interaction.reply({
+          content: "❌ Salon invalide.",
+          ephemeral: true
+        });
+      }
 
       welcomeChannelId = channel.id;
 
-      return interaction.reply({
+      return await interaction.reply({
         content: `✅ Salon de bienvenue défini sur ${channel}`,
         ephemeral: true
       });
     }
 
   } catch (err) {
-    console.error("Erreur interaction:", err);
+    console.error("❌ Erreur interaction:", err);
 
-    if (!interaction.replied) {
+    if (!interaction.replied && !interaction.deferred) {
       await interaction.reply({
-        content: "❌ Erreur bot.",
+        content: "❌ Une erreur est survenue.",
         ephemeral: true
       });
     }
@@ -74,7 +95,7 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // =========================
-// 👋 WELCOME MESSAGE (GIF)
+// 👋 WELCOME MESSAGE
 // =========================
 client.on('guildMemberAdd', async (member) => {
   try {
@@ -84,10 +105,10 @@ client.on('guildMemberAdd', async (member) => {
     if (!channel) return;
 
     const embed = new EmbedBuilder()
-      .setTitle("👋 Bienvenue sur le serveur !")
+      .setTitle("👋 Bienvenue !")
       .setDescription(
         `🎉 Bienvenue ${member} !\n` +
-        `On est heureux de t’accueillir sur **${member.guild.name}** ❤️`
+        `Bienvenue sur **${member.guild.name}** ❤️`
       )
       .setColor(0x00ff99)
       .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
@@ -102,9 +123,12 @@ client.on('guildMemberAdd', async (member) => {
 });
 
 // =========================
-// DEBUG + LOGIN
+// DEBUG
 // =========================
 client.on('error', console.error);
 process.on('unhandledRejection', console.error);
 
+// =========================
+// LOGIN
+// =========================
 client.login(process.env.TOKEN);
