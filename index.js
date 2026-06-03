@@ -55,7 +55,7 @@ client.on('interactionCreate', async (interaction) => {
       });
     }
 
-    // 👋 /setwelcome (juste salon)
+    // 👋 /setwelcome (SEULEMENT SALON)
     if (interaction.commandName === 'setwelcome') {
       const channel = interaction.options.getChannel('salon');
 
@@ -82,7 +82,7 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 // =========================
-// WELCOME SYSTEM (AVATAR LEFT)
+// WELCOME SYSTEM
 // =========================
 client.on('guildMemberAdd', async (member) => {
   try {
@@ -91,6 +91,14 @@ client.on('guildMemberAdd', async (member) => {
 
     const channel = member.guild.channels.cache.get(welcomeConfig.channelId);
     if (!channel) return;
+
+    // =========================
+    // MESSAGE FIXE
+    // =========================
+    const message =
+`@${member.user.username} fait son apparition sur le serveur SDZ ! 🎉
+
+On t’attendait avec impatience, installe-toi confortablement 🪑`;
 
     // =========================
     // CANVAS
@@ -114,21 +122,18 @@ client.on('guildMemberAdd', async (member) => {
 
     ctx.save();
     ctx.beginPath();
-
-    // cercle à gauche
     ctx.arc(150, 175, 80, 0, Math.PI * 2);
     ctx.closePath();
     ctx.clip();
 
     ctx.drawImage(avatar, 70, 95, 160, 160);
-
     ctx.restore();
 
     // =========================
     // ENVOI
     // =========================
     await channel.send({
-      content: `👋 Bienvenue ${member} sur le serveur SDZ !`,
+      content: message,
       files: [{
         attachment: canvas.toBuffer(),
         name: "welcome-card.png"
