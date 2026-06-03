@@ -1,17 +1,11 @@
-const {
-  REST,
-  Routes,
-  SlashCommandBuilder,
-  ChannelType
-} = require('discord.js');
-
+const { REST, Routes, SlashCommandBuilder, ChannelType } = require('discord.js');
 require('dotenv').config();
 
 const commands = [
+  // 📢 /annonce
   new SlashCommandBuilder()
     .setName('annonce')
-    .setDescription('Publier une annonce')
-
+    .setDescription('Publier une annonce dans un salon')
     .addChannelOption(option =>
       option
         .setName('salon')
@@ -19,28 +13,37 @@ const commands = [
         .addChannelTypes(ChannelType.GuildText)
         .setRequired(true)
     )
-
     .addStringOption(option =>
       option
         .setName('message')
-        .setDescription('Message (optionnel)')
+        .setDescription('Message à publier')
         .setRequired(false)
     )
-
     .addAttachmentOption(option =>
       option
         .setName('image')
-        .setDescription('Image depuis ton ordinateur')
+        .setDescription('Image à envoyer')
         .setRequired(false)
+    ),
+
+  // 👋 /setwelcome
+  new SlashCommandBuilder()
+    .setName('setwelcome')
+    .setDescription('Définir le salon de bienvenue')
+    .addChannelOption(option =>
+      option
+        .setName('salon')
+        .setDescription('Salon de bienvenue')
+        .addChannelTypes(ChannelType.GuildText)
+        .setRequired(true)
     )
-    .toJSON()
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
-    console.log('Déploiement de la commande...');
+    console.log('🚀 Déploiement des commandes...');
 
     await rest.put(
       Routes.applicationGuildCommands(
@@ -50,8 +53,8 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
       { body: commands }
     );
 
-    console.log('✅ Commande déployée');
+    console.log('✅ Commandes déployées avec succès');
   } catch (err) {
-    console.error(err);
+    console.error('❌ Erreur déploiement:', err);
   }
 })();
