@@ -16,6 +16,31 @@ const commands = [
       o.setName('message')
         .setDescription('Message')
         .setRequired(true)
+    )
+    .addAttachmentOption(o =>
+      o.setName('fichier1')
+        .setDescription('Fichier a joindre')
+        .setRequired(false)
+    )
+    .addAttachmentOption(o =>
+      o.setName('fichier2')
+        .setDescription('Fichier a joindre')
+        .setRequired(false)
+    )
+    .addAttachmentOption(o =>
+      o.setName('fichier3')
+        .setDescription('Fichier a joindre')
+        .setRequired(false)
+    )
+    .addAttachmentOption(o =>
+      o.setName('fichier4')
+        .setDescription('Fichier a joindre')
+        .setRequired(false)
+    )
+    .addAttachmentOption(o =>
+      o.setName('fichier5')
+        .setDescription('Fichier a joindre')
+        .setRequired(false)
     ),
 
   new SlashCommandBuilder()

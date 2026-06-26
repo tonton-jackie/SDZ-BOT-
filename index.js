@@ -46,8 +46,19 @@ client.on('interactionCreate', async (interaction) => {
     if (interaction.commandName === 'annonce') {
       const channel = interaction.options.getChannel('salon');
       const message = interaction.options.getString('message');
+      const attachmentNames = ['fichier1', 'fichier2', 'fichier3', 'fichier4', 'fichier5'];
+      const files = attachmentNames
+        .map((name) => interaction.options.getAttachment(name))
+        .filter(Boolean)
+        .map((file) => ({
+          attachment: file.url,
+          name: file.name
+        }));
 
-      await channel.send({ content: message });
+      await channel.send({
+        content: message,
+        files
+      });
 
       return interaction.reply({
         content: "✅ Annonce envoyée",
